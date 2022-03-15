@@ -133,7 +133,9 @@ int CALLBACK WinMain(
 						webviewController->put_Bounds(bounds);
 
 						// Schedule an async task to navigate to Bing
-						webviewWindow->Navigate(L"https://www.bing.com/");
+						// webviewWindow->Navigate(L"https://www.bing.com/");
+						webviewWindow->Navigate(L"https://play.google.com/games/profile");
+						// webviewWindow->Navigate(L"https://play.google.com");
 
 						// Step 4 - Navigation events
 						// register an ICoreWebView2NavigationStartingEventHandler to cancel any non-https navigation
