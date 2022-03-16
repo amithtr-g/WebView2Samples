@@ -13,6 +13,9 @@ Global
 		Release|ARM64 = Release|ARM64
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
+		TestRun|ARM64 = TestRun|ARM64
+		TestRun|x64 = TestRun|x64
+		TestRun|x86 = TestRun|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{A1238CE8-5AF4-4BBB-9821-E6BBB0D44F75}.Debug|ARM64.ActiveCfg = Debug|ARM64
@@ -27,6 +30,12 @@ Global
 		{A1238CE8-5AF4-4BBB-9821-E6BBB0D44F75}.Release|x64.Build.0 = Release|x64
 		{A1238CE8-5AF4-4BBB-9821-E6BBB0D44F75}.Release|x86.ActiveCfg = Release|Win32
 		{A1238CE8-5AF4-4BBB-9821-E6BBB0D44F75}.Release|x86.Build.0 = Release|Win32
+		{A1238CE8-5AF4-4BBB-9821-E6BBB0D44F75}.TestRun|ARM64.ActiveCfg = Release|ARM64
+		{A1238CE8-5AF4-4BBB-9821-E6BBB0D44F75}.TestRun|ARM64.Build.0 = Release|ARM64
+		{A1238CE8-5AF4-4BBB-9821-E6BBB0D44F75}.TestRun|x64.ActiveCfg = Release|x64
+		{A1238CE8-5AF4-4BBB-9821-E6BBB0D44F75}.TestRun|x64.Build.0 = Release|x64
+		{A1238CE8-5AF4-4BBB-9821-E6BBB0D44F75}.TestRun|x86.ActiveCfg = Release|Win32
+		{A1238CE8-5AF4-4BBB-9821-E6BBB0D44F75}.TestRun|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
