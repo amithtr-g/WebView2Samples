@@ -98,44 +98,6 @@ int CALLBACK WinMain(
 		return 1;
 	}
 
-	/*
-	static char buffer[256];
-	snprintf(buffer, 256, "hello world");
-	HDC hdc;
-	RECT rect;
-	PAINTSTRUCT ps;
-
-	hdc = BeginPaint(hWnd, &ps);
-
-	GetClientRect(hWnd, &rect);
-	SetTextAlign(hdc, TA_CENTER);
-	TextOut(hdc, rect.right / 2, rect.bottom / 2, buffer, strlen(buffer));
-
-	EndPaint(hWnd, &ps);
-	*/
-
-	/*
-	std::string s = "hello world";
-	std::wstring stemp1 = std::wstring(s.begin(), s.end());
-	LPCWSTR sw = stemp1.c_str();
-
-	std::string stc = "STATIC";
-	std::wstring stemp2 = std::wstring(s.begin(), s.end());
-	LPCWSTR pstc = stemp2.c_str();
-
-
-	HWND hWndExample = CreateWindow(pstc,  sw, WS_VISIBLE | WS_CHILD | SS_LEFT, 10, 10, 10, 10, hWnd, NULL, hInstance, NULL);
-	*/
-
-	/*
-	PAINTSTRUCT ps;
-	HDC hdc = BeginPaint(hWnd, &ps);
-
-	TextOut(hdc, 10, 10, TEXT("Text Out String"), strlen("Text Out String"));
-
-	EndPaint(hWnd, &ps);
-	ReleaseDC(hWnd, hdc);
-	*/
 
 	// The parameters to ShowWindow explained:
 	// hWnd: the value returned from CreateWindow
@@ -274,7 +236,9 @@ int CALLBACK WinMain(
 						// Schedule an async task to navigate to Bing
 						// webviewWindow->Navigate(L"https://www.bing.com/");
 						// webviewWindow->Navigate(L"https://play.google.com/games/profile");
-						webviewWindow->Navigate(L"https://play.google.com");
+						// webviewWindow->Navigate(L"https://play.google.com");
+
+						webviewWindow->Navigate(L"https://accounts.google.com");
 
 
 						// Step 4 - Navigation events
@@ -359,6 +323,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			RECT bounds;
 			GetClientRect(hWnd, &bounds);
 			webviewController->put_Bounds(bounds);
+			// calling close will close the webview
+			// webviewController->Close();
 		};
 		break;
 	case WM_DESTROY:
