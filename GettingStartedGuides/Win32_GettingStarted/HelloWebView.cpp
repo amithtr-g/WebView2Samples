@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string>
 #include <tchar.h>
+#include "time.h"
 #include <wrl.h>
 #include <wil/com.h>
 // include WebView2 header
@@ -99,12 +100,14 @@ int CALLBACK WinMain(
 		return 1;
 	}
 
+
 	// The parameters to ShowWindow explained:
 	// hWnd: the value returned from CreateWindow
 	// nCmdShow: the fourth parameter from WinMain
 	ShowWindow(hWnd,
 		nCmdShow);
 	UpdateWindow(hWnd);
+
 
 	// <-- WebView2 sample code starts here -->
 	// Step 3 - Create a single WebView within the parent window
@@ -120,6 +123,97 @@ int CALLBACK WinMain(
 							webviewController = controller;
 							webviewController->get_CoreWebView2(&webviewWindow);
 						}
+						
+						wil::com_ptr<ICoreWebView2_2> m_webview2;
+						ICoreWebView2CookieManager* m_cookieManager;
+						webviewWindow->QueryInterface(IID_PPV_ARGS(&m_webview2));
+						m_webview2->get_CookieManager(&m_cookieManager);
+
+
+						std::wstring uri;
+
+						// print the previous cookie
+						if (m_cookieManager)
+						{
+							m_cookieManager->GetCookies(
+								uri.c_str(),
+								Callback<ICoreWebView2GetCookiesCompletedHandler>(
+									[hWnd, uri](HRESULT error_code, ICoreWebView2CookieList* list) -> HRESULT {
+								// CHECK_FAILURE(error_code);
+
+								std::wstring result;
+								UINT cookie_list_size;
+								list->get_Count(&cookie_list_size);
+
+								if (cookie_list_size == 0)
+								{
+									result += L"No cookies found.";
+								}
+								else
+								{
+									result += std::to_wstring(cookie_list_size) + L" cookie(s) found";
+									if (!uri.empty())
+									{
+										result += L" on " + uri;
+									}
+									result += L"\n\n[";
+									for (UINT i = 0; i < cookie_list_size; ++i)
+									{
+										wil::com_ptr<ICoreWebView2Cookie> cookie;
+										list->GetValueAtIndex(i, &cookie);
+
+										if (cookie.get())
+										{
+											// LPWSTR temp;
+											// cookie.get()->get_Name(temp);
+											
+											// -- coookie print -- //
+											wil::unique_cotaskmem_string name;
+											cookie.get()->get_Name(&name);
+											wil::unique_cotaskmem_string value;
+											cookie.get()->get_Value(&value);
+
+
+											std::wstring cky = L"{";
+											//cky += L"\"Name\": " +  std::wstring(name.get()) + L", " + L"\"Value\": " +
+												// std::wstring(value.get());
+
+											cky += L"\"Name\": " + std::wstring(name.get()) + L", ";
+											cky += L"\"}";
+
+											// -- end cookie print -- //
+
+											result += cky;
+
+											if (i != cookie_list_size - 1)
+											{
+												result += L",\n";
+											}
+										}
+									}
+									result += L"]";
+								}
+								MessageBox(nullptr, result.c_str(), L"GetCookies Result", MB_OK);
+								return S_OK;
+							})
+								.Get());
+						}
+						
+
+						// set the cookie
+						srand(time(NULL));
+						int r = rand() % 26;
+						char c = 'a' + r;
+
+						wchar_t buf[100];
+						swprintf(buf, 100, L"%s-%c", L"CookieAmith", c);
+
+						wil::com_ptr<ICoreWebView2Cookie> cookie;
+						m_cookieManager->CreateCookie(
+							buf, L"CookieValueAmith", L".google.com", L"/", &cookie);
+						m_cookieManager->AddOrUpdateCookie(cookie.get());
+
+
 
 						// Add a few settings for the webview
 						// The demo step is redundant since the values are the default settings
@@ -128,16 +222,26 @@ int CALLBACK WinMain(
 						Settings->put_IsScriptEnabled(TRUE);
 						Settings->put_AreDefaultScriptDialogsEnabled(TRUE);
 						Settings->put_IsWebMessageEnabled(TRUE);
+						
 
 						// Resize WebView to fit the bounds of the parent window
 						RECT bounds;
 						GetClientRect(hWnd, &bounds);
+						
+						bounds.left += 100;
+						bounds.right -= 100;
+						bounds.top += 100;
+						bounds.bottom -= 100;
+
 						webviewController->put_Bounds(bounds);
 
 						// Schedule an async task to navigate to Bing
 						// webviewWindow->Navigate(L"https://www.bing.com/");
-						webviewWindow->Navigate(L"https://play.google.com/games/profile");
+						// webviewWindow->Navigate(L"https://play.google.com/games/profile");
 						// webviewWindow->Navigate(L"https://play.google.com");
+
+						webviewWindow->Navigate(L"https://accounts.google.com");
+
 
 						// Step 4 - Navigation events
 						// register an ICoreWebView2NavigationStartingEventHandler to cancel any non-https navigation
@@ -243,6 +347,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			RECT bounds;
 			GetClientRect(hWnd, &bounds);
 			webviewController->put_Bounds(bounds);
+			// calling close will close the webview
+			// webviewController->Close();
 		};
 		break;
 	case WM_DESTROY:
