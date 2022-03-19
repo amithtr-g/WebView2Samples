@@ -16,6 +16,8 @@ using namespace Microsoft::WRL;
 
 // The main window class name.
 static TCHAR szWindowClass[] = _T("DesktopApp");
+HBRUSH hbrWhite, hbrGray;
+HDC hdc;
 
 // The string that appears in the application's title bar.
 static TCHAR szTitle[] = _T("WebView sample");
@@ -100,6 +102,21 @@ int CALLBACK WinMain(
 		return 1;
 	}
 
+	/*
+	static char buffer[256];
+	snprintf(buffer, 256, "hello world");
+	HDC hdc;
+	RECT rect;
+	PAINTSTRUCT ps;
+
+	hdc = BeginPaint(hWnd, &ps);
+
+	GetClientRect(hWnd, &rect);
+	SetTextAlign(hdc, TA_CENTER);
+	TextOut(hdc, rect.right / 2, rect.bottom / 2, buffer, strlen(buffer));
+
+	EndPaint(hWnd, &ps);
+	*/
 
 	// The parameters to ShowWindow explained:
 	// hWnd: the value returned from CreateWindow
@@ -342,6 +359,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	switch (message)
 	{
+	case WM_CREATE:
+		hbrWhite = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
+		hbrGray = static_cast<HBRUSH>(GetStockObject(GRAY_BRUSH));
+		return 0L;
+
+	case WM_ERASEBKGND:
+		hdc = (HDC)wParam;
+		RECT rc;
+		GetClientRect(hWnd, &rc);
+		SetMapMode(hdc, MM_ANISOTROPIC);
+		SetWindowExtEx(hdc, 100, 100, NULL);
+		SetViewportExtEx(hdc, rc.right, rc.bottom, NULL);
+		FillRect(hdc, &rc, hbrWhite);
+
+		for (int i = 0; i < 13; i++)
+		{
+			int x = (i * 40) % 100;
+			int y = ((i * 40) / 100) * 20;
+			SetRect(&rc, x, y, x + 20, y + 20);
+			FillRect(hdc, &rc, hbrGray);
+		}
+		return 1L;
 	case WM_SIZE:
 		if (webviewController != nullptr) {
 			RECT bounds;
