@@ -30,6 +30,8 @@ static wil::com_ptr<ICoreWebView2Controller> webviewController;
 // Pointer to WebView window
 static wil::com_ptr<ICoreWebView2> webviewWindow;
 
+bool purchaseCompleted = false;
+
 int CALLBACK WinMain(
 	_In_ HINSTANCE hInstance,
 	_In_ HINSTANCE hPrevInstance,
@@ -145,10 +147,28 @@ int CALLBACK WinMain(
 								PWSTR uri;
 								args->get_Uri(&uri);
 								std::wstring source(uri);
-								if (source.substr(0, 5) != L"https") {
-									args->put_Cancel(true);
+								if (source.find(L"https://play.google.com/web/ncsoft") == 0) {
+									purchaseCompleted = true;
 								}
 								CoTaskMemFree(uri);
+								return S_OK;
+							}).Get(), &token);
+
+						webviewWindow->add_NavigationCompleted(Callback<ICoreWebView2NavigationCompletedEventHandler>(
+							[](ICoreWebView2* webview, ICoreWebView2NavigationCompletedEventArgs* args) -> HRESULT {
+								if (purchaseCompleted) {
+									BOOL isSuccess;
+									args->get_IsSuccess(&isSuccess);
+									webviewWindow->ExecuteScript(
+										//L"while(true) { if (window.document.documentElement.innerText.indexOf(\'successful\') > -1) {window.chrome.webview.postMessage(\'success\'); break; } }",
+										//L"window.document.documentElement.addEventListener(\'click\', function() {window.chrome.webview.postMessage(\'success\');} );",
+										//L"myTimeout(); function myTimeout() {console.log(\'loop\'); setTimeout(myFunc, 2000);} function myFunc() {if (window.document.documentElement.innerText.indexOf(\'Diamonds\') > -1) {window.chrome.webview.postMessage(\'success\');} else { myTimeout(); }}",
+										L"setTimeout(myFunc, 5000); function myFunc() { window.chrome.webview.postMessage(\'success\');}",
+										Callback<ICoreWebView2ExecuteScriptCompletedHandler>(
+											[](HRESULT errorCode, LPCWSTR resultObjectAsJson) -> HRESULT {
+												return S_OK;
+											}).Get());
+								}
 								return S_OK;
 							}).Get(), &token);
 
@@ -171,6 +191,10 @@ int CALLBACK WinMain(
 								args->TryGetWebMessageAsString(&message);
 								// processMessage(&message);
 								webview->PostWebMessageAsString(message);
+								std::wstring result(message);
+								if (result.find(L"success") != -1) {
+									webviewController->Close();
+								}
 								CoTaskMemFree(message);
 								return S_OK;
 							}).Get(), &token);
