@@ -385,6 +385,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (webviewController != nullptr) {
 			RECT bounds;
 			GetClientRect(hWnd, &bounds);
+			bounds.left += 100;
+			bounds.right -= 100;
+			bounds.top += 100;
+			bounds.bottom -= 100;
 			webviewController->put_Bounds(bounds);
 			// calling close will close the webview
 			// webviewController->Close();
