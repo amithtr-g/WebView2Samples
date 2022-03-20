@@ -102,22 +102,6 @@ int CALLBACK WinMain(
 		return 1;
 	}
 
-	/*
-	static char buffer[256];
-	snprintf(buffer, 256, "hello world");
-	HDC hdc;
-	RECT rect;
-	PAINTSTRUCT ps;
-
-	hdc = BeginPaint(hWnd, &ps);
-
-	GetClientRect(hWnd, &rect);
-	SetTextAlign(hdc, TA_CENTER);
-	TextOut(hdc, rect.right / 2, rect.bottom / 2, buffer, strlen(buffer));
-
-	EndPaint(hWnd, &ps);
-	*/
-
 	// The parameters to ShowWindow explained:
 	// hWnd: the value returned from CreateWindow
 	// nCmdShow: the fourth parameter from WinMain
