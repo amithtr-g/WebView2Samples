@@ -16,7 +16,7 @@ using namespace Microsoft::WRL;
 
 // The main window class name.
 static TCHAR szWindowClass[] = _T("DesktopApp");
-HBRUSH hbrWhite, hbrGray;
+HBRUSH hbrBlack, hbrGray;
 HDC hdc;
 
 // The string that appears in the application's title bar.
@@ -344,7 +344,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message)
 	{
 	case WM_CREATE:
-		hbrWhite = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
+		hbrBlack = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
 		hbrGray = static_cast<HBRUSH>(GetStockObject(GRAY_BRUSH));
 		return 0L;
 
@@ -355,7 +355,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		SetMapMode(hdc, MM_ANISOTROPIC);
 		SetWindowExtEx(hdc, 100, 100, NULL);
 		SetViewportExtEx(hdc, rc.right, rc.bottom, NULL);
-		FillRect(hdc, &rc, hbrWhite);
+		FillRect(hdc, &rc, hbrBlack);
 
 		for (int i = 0; i < 13; i++)
 		{
@@ -377,6 +377,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// calling close will close the webview
 			// webviewController->Close();
 		};
+		
 		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
