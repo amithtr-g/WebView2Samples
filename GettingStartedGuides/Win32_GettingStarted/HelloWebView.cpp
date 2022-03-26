@@ -223,7 +223,19 @@ int CALLBACK WinMain(
 						Settings->put_IsScriptEnabled(TRUE);
 						Settings->put_AreDefaultScriptDialogsEnabled(TRUE);
 						Settings->put_IsWebMessageEnabled(TRUE);
+						// " Not A;Brand";v="99", "Chromium";v="99", "Google Chrome";v="99"
+						// Settings->put_UserAgent('" Not A;Brand"; v = "99", "Chromium"; v = "99", "Google Chrome"; v = "99"');
+						// " Not A;Brand";v="99", "Chromium";v="99", "Microsoft Edge";v="99"
+
 						
+						ICoreWebView2Settings2* Settings2;
+						auto hr = Settings->QueryInterface(IID_PPV_ARGS(&Settings2));
+						if (SUCCEEDED(hr)) {
+							// Settings2->put_UserAgent(L"\" Not A; Brand\"; v = \"99\", \"Chromium\"; v = \"99\", \"Google Chrome\"; v = \"99\"");
+							Settings2->put_UserAgent(L"\" Not A; Brand\";v=\"99\", \"Chromium\";v=\"99\", \"Microsoft Edge\";v=\"99\"");
+						}
+						
+
 
 						// Resize WebView to fit the bounds of the parent window
 						RECT bounds;
@@ -238,10 +250,10 @@ int CALLBACK WinMain(
 
 						// Schedule an async task to navigate to Bing
 						// webviewWindow->Navigate(L"https://www.bing.com/");
-						// webviewWindow->Navigate(L"https://play.google.com/games/profile");
+						webviewWindow->Navigate(L"https://play.google.com/games/profile");
 						// webviewWindow->Navigate(L"https://play.google.com");
 
-						webviewWindow->Navigate(L"https://accounts.google.com");
+						// webviewWindow->Navigate(L"https://accounts.google.com");
 
 
 						// Step 4 - Navigation events
@@ -253,6 +265,9 @@ int CALLBACK WinMain(
 								args->get_Uri(&uri);
 								std::wstring source(uri);
 								if (source.find(L"https://play.google.com/web/ncsoft") == 0) {
+									purchaseCompleted = true;
+								}
+								if (source.find(L"https://play.google.com/") == 0) {
 									purchaseCompleted = true;
 								}
 								CoTaskMemFree(uri);
@@ -268,7 +283,7 @@ int CALLBACK WinMain(
 										//L"while(true) { if (window.document.documentElement.innerText.indexOf(\'successful\') > -1) {window.chrome.webview.postMessage(\'success\'); break; } }",
 										//L"window.document.documentElement.addEventListener(\'click\', function() {window.chrome.webview.postMessage(\'success\');} );",
 										//L"myTimeout(); function myTimeout() {console.log(\'loop\'); setTimeout(myFunc, 2000);} function myFunc() {if (window.document.documentElement.innerText.indexOf(\'Diamonds\') > -1) {window.chrome.webview.postMessage(\'success\');} else { myTimeout(); }}",
-										L"setTimeout(myFunc, 5000); function myFunc() { window.chrome.webview.postMessage(\'success\');}",
+										L"setTimeout(myFunc, 300000); function myFunc() { window.chrome.webview.postMessage(\'success\');}",
 										Callback<ICoreWebView2ExecuteScriptCompletedHandler>(
 											[](HRESULT errorCode, LPCWSTR resultObjectAsJson) -> HRESULT {
 												return S_OK;
